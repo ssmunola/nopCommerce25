@@ -5,7 +5,7 @@ pipeline {
         timeout(time: 1, unit: 'hours')
     }
     triggers{
-        pollscm(* * * * *)
+        pollscm('* * * * *')
     }
     stages{
         stage('SCM'){
