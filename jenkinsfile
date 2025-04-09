@@ -1,0 +1,31 @@
+pipeline {
+    agent {label 'dotnet'}
+    options {
+        // Timeout counter starts AFTER agent is allocated
+        timeout(time: 1, unit: 'hours')
+    }
+    triggers{
+        pollscm(* * * * *)
+    }
+    stages{
+        stage('SCM'){
+            steps{
+                git url: 'https://github.com/ssmunola/nopCommerce25.git',
+                    branch: 'develop'
+            }
+        }
+        stage('Build'){
+            steps{
+                sh 'dotnet build -c Release src/presentation/Nop.Web/Nop.Web.csproj'
+                sh 'mkdir published &&  dotnet publish -o published -c Release src/presentation/Nop.Web/Nop.Web.csproj'
+            }
+        }
+    }
+    post{
+        success{
+            zip zipFile:'./published.zip',
+                archive: true,
+                dir: './published'
+        }
+    }
+}
